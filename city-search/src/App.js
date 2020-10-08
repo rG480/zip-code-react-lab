@@ -2,16 +2,15 @@ import React, { Component } from 'react';
 import './App.css';
 
 
-function City(props) {
+function ZipCode(props) {
  
 return (
-<div><p> {props.data.City}</p>
-<p>{props.data.State}</p>
-<p>{props.data.EstimatedPopulation}</p></div>);
+<div><p> {props.data}</p>
+</div>);
 }
 
-function ZipSearchField(props) {
-  return (<div><p>Zip Code:</p><span><input type="text" onChange={(e)=>props.zipChanged(e)}/></span></div>);
+function CitySearchField(props) {
+  return (<div><p>City:</p><form onSubmit= {(e)=>props.zipChanged(e)}><input name="textBox1" type="text" /><input type="submit" ></input></form></div>);
 }
 
 
@@ -19,46 +18,44 @@ class App extends Component {
   constructor(props){
     super(props)
     this.state={
-      cityData:'false',
-      cities:[],
+      zipData:'false',
+      zipCodes:[],
     }
   }
   handleChange(event){
-    if(event.target.value.length >5){
-    fetch('http://ctp-zip-api.herokuapp.com/city/'+event.target.value)
+    event.preventDefault();
+    if(event.target.textBox1.value.length >5){
+    fetch('http://ctp-zip-api.herokuapp.com/city/'+ event.target.textBox1.value.toUpperCase())
     .then(response => response.json())
     .then(response=>{
       console.log(response)
-      console.log(response[0].City)
       this.setState({
-        cityData:response,
-        cities:[]
+        zipData:response,
+        zipCodes:[]
       })
-      console.log(response)
-      
-     
-    })
+   })
   }
    
   
   }
-  createCities(){
-    for (let i=0;i<this.state.cityData.length;i++){
-      this.state.cities.push(<City data={this.state.cityData[i]}/>)
+  createzipCodes(){
+    for (let i=0;i<this.state.zipData.length;i++){
+      this.state.zipCodes.push(<ZipCode data={this.state.zipData[i]}/>)
     }
    
   }
   render() {
-   
-    this.createCities();
+    if(this.state.zipData !== 'false'){
+    this.createzipCodes();
+    }
     return (
       <div className="App">
         <div className="App-header">
           <h2>City Search</h2>
         </div>
-        <ZipSearchField zipChanged={(e)=>this.handleChange(e)}/>
+        <CitySearchField zipChanged={(e)=>this.handleChange(e)}/>
         <div>
-        <div className="cities">{this.state.cities}</div>
+        <div className="zipCodes">{this.state.zipCodes}</div>
         </div>
       </div>
     );
